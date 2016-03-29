@@ -1,6 +1,6 @@
 //Global variable
 surveyImagesArray = [];
-displayedArray = [];
+
 
 //Object constructor
 function SurveyImages(name, filePath) {
@@ -14,7 +14,7 @@ function SurveyImages(name, filePath) {
 var bagImg = new SurveyImages('bag', 'img/bag.jpg');
 var bananaImg = new SurveyImages('banana', 'img/banana.jpg');
 var bathroomImg = new SurveyImages('bathroom', 'img/bathroom.jpg');
-var bootsImg = new SurveyImages('boots', 'img/bathroom.jpg');
+var bootsImg = new SurveyImages('boots', 'img/boots.jpg');
 var breakfastImg = new SurveyImages('breakfast', 'img/breakfast.jpg');
 var bubblegumImg = new SurveyImages('bubblegum', 'img/bubblegum.jpg');
 var chairImg = new SurveyImages('chair', 'img/chair.jpg');
@@ -35,22 +35,19 @@ var wineglassImg = new SurveyImages('wine-glass', 'img/wine-glass.jpg');
 console.log('bag: ', bagImg);
 console.log('array: ', surveyImagesArray);
 
-function renderImages(surveyImagesArray) {
+function renderImages() {
+  key = randomNoArray(0, surveyImagesArray.length);
   for (var i = 0; i < 3; i++) {
-    randomObject = randomImageObject(surveyImagesArray);
+    randomObject = surveyImagesArray[key[i]];
+    console.log('randomObject', randomObject);
     elBody = document.getElementById('marketResearch');
     elImg = document.createElement('img');
     elImg.setAttribute('class', 'survey-display');
     elImg.setAttribute('src', randomObject.filePath);
     elImg.setAttribute('id', randomObject.name);
     elBody.appendChild(elImg);
-    randomObject.timesRendered += 1;
+    randomObject.timesRendered ++;
   }
-}
-
-//function that call a random filePath from the Array
-function randomImageObject(globalArray) {
-  return globalArray[randomNo(0, globalArray.length)];
 }
 
 //function to generate random number between inclusive min and exclusive max
@@ -58,14 +55,18 @@ function randomNo(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
-// function randomNoArray (min, max) {
-//   for (var i = 0; i < 3; i++) {
-//     displayedArray.push(Math.floor(Math.random() * (max - min)) + min);
-//   }
-//   if (displayedArray[0] === displayedArray[1] || displayedArray[1] === displayedArray[2] || displayedArray[0] === displayArray[2]) {
-//
-//   }
-// }
+function randomNoArray (min, max) {
+  for (var i = 0; i < 3; i++) {
+    var displayedArray = [];
+    displayedArray.push(Math.floor(Math.random() * (max - min)) + min);
+  }
+  while (displayedArray[0] === displayedArray[1] || displayedArray[1] === displayedArray[2] || displayedArray[0] === displayedArray[2]) {
+    displayedArray.splice(1, 2);
+    displayedArray.push(Math.floor(Math.random() * (max - min)) + min);
+    displayedArray.push(Math.floor(Math.random() * (max - min)) + min);
+  }
+  return displayedArray;
+}
 
 //function to clear elements from page
 function clearBox(elementID) {
@@ -76,13 +77,13 @@ function clearBox(elementID) {
 function addClicks(id) {
   for (var i = 0; i < surveyImagesArray.length; i++) {
     if (surveyImagesArray[i].name == id) {
-      surveyImagesArray[i].timesClicked += 1;
+      surveyImagesArray[i].timesClicked ++;
     }
   }
 }
 
 //call render Images function
-renderImages(surveyImagesArray);
+renderImages();
 
 function handleImageClick(event) {
   imgEl = event.target;
@@ -90,7 +91,7 @@ function handleImageClick(event) {
   console.log('id ', idEl);
   addClicks(idEl);
   clearBox('marketResearch');
-  renderImages(surveyImagesArray);
+  renderImages();
   eventListener();
 }
 
