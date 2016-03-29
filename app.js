@@ -17,20 +17,23 @@ var bathroomImg = new SurveyImages('bathroom', 'img/bathroom.jpg');
 console.log('bag: ', bagImg);
 console.log('array: ', surveyImagesArray);
 
-function renderImages(randomObject) {
-  elBody = document.getElementById('marketResearch');
-  elImg = document.createElement('img');
-  elImg.setAttribute('class', 'surveyDisplay');
-  elImg.setAttribute('src', randomObject.filePath);
-  elBody.appendChild(elImg);
-  randomObject.timesRendered += 1;
+function renderImages(surveyImagesArray) {
+  for (var i = 0; i < 3; i++) {
+    randomObject = randomImageObject(surveyImagesArray);
+    elBody = document.getElementById('marketResearch');
+    elImg = document.createElement('img');
+    elImg.setAttribute('class', 'surveyDisplay');
+    elImg.setAttribute('src', randomObject.filePath);
+    elBody.appendChild(elImg);
+    randomObject.timesRendered += 1;
+  }
 }
 
-console.log('random object ', randomImagesObject(surveyImagesArray));
-renderImages(randomImagesObject(surveyImagesArray));
+console.log('random object ', randomImageObject(surveyImagesArray));
+renderImages(surveyImagesArray);
 
 //function that call a random filePath from the Array
-function randomImagesObject(globalArray) {
+function randomImageObject(globalArray) {
   return globalArray[randomNo(0, globalArray.length)];
 }
 
