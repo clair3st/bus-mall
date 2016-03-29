@@ -10,11 +10,14 @@ function SurveyImages(name, filePath) {
   surveyImagesArray.push(this);
 }
 
-var bagImg = new SurveyImages('bag', 'img/bag.jpg');
-var bananaImg = new SurveyImages('banana', 'img/banana.jpg');
-var bathroomImg = new SurveyImages('bathroom', 'img/bathroom.jpg');
+var bag = new SurveyImages('bag', 'img/bag.jpg');
+var banana = new SurveyImages('banana', 'img/banana.jpg');
+var bathroom = new SurveyImages('bathroom', 'img/bathroom.jpg');
+var boots = new SurveyImages('boots', 'img/bathroom.jpg');
+var breakfast = new SurveyImages('breakfast', 'img/breakfast.jpg');
+var bubblegum = new SurveyImages('bubblegum', 'img/bubblegum.jpg');
 
-console.log('bag: ', bagImg);
+console.log('bag: ', bag);
 console.log('array: ', surveyImagesArray);
 
 function renderImages(surveyImagesArray) {
@@ -22,15 +25,13 @@ function renderImages(surveyImagesArray) {
     randomObject = randomImageObject(surveyImagesArray);
     elBody = document.getElementById('marketResearch');
     elImg = document.createElement('img');
-    elImg.setAttribute('class', 'surveyDisplay');
+    elImg.setAttribute('class', 'survey-display');
     elImg.setAttribute('src', randomObject.filePath);
+    elImg.setAttribute('id', randomObject.name);
     elBody.appendChild(elImg);
     randomObject.timesRendered += 1;
   }
 }
-
-console.log('random object ', randomImageObject(surveyImagesArray));
-renderImages(surveyImagesArray);
 
 //function that call a random filePath from the Array
 function randomImageObject(globalArray) {
@@ -41,3 +42,40 @@ function randomImageObject(globalArray) {
 function randomNo (min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
+
+//function to clear elements from page
+function clearBox(elementID) {
+  document.getElementById(elementID).innerHTML = '';
+}
+
+//function to add to clicks
+function addClicks(id) {
+  for (var i = 0; i < surveyImagesArray.length; i++) {
+    if (surveyImagesArray[i].name == id) {
+      surveyImagesArray[i].timesClicked += 1;
+    }
+  }
+}
+
+//call render Images function
+renderImages(surveyImagesArray);
+
+function handleImageClick(event) {
+  imgEl = event.target;
+  idEl = imgEl.id;
+
+  console.log('id ', idEl);
+  addClicks(idEl);
+  clearBox('marketResearch');
+  renderImages(surveyImagesArray);
+  eventListener();
+}
+
+function eventListener() {
+  var surveyDisplay = document.getElementsByClassName('survey-display');
+  for (var i = 0; i < surveyDisplay.length; i++){
+    surveyDisplay[i].addEventListener('click', handleImageClick);
+  }
+}
+
+eventListener();
