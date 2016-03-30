@@ -8,7 +8,6 @@ function SurveyImages(name, filePath) {
   this.filePath = filePath;
   this.timesRendered = 0;
   this.timesClicked = 0;
-  this.percentClicked = parseInt(this.timesRendered) / parseInt(this.timesClicked);
   surveyImagesArray.push(this);
 }
 
@@ -45,7 +44,6 @@ function addClicks(id) {
     }
   }
 }
-
 
 //function to render three different random images to a page
 function renderImages() {
@@ -93,6 +91,9 @@ function handleImageClick(event) {
   if (totalClicks < 25) {
     renderImages();
     eventListener();
+  } else if (totalClicks === 25) {
+    createButtonResults();
+    eventListenerButton();
   }
 }
 
@@ -103,8 +104,10 @@ function eventListener() {
   }
 }
 
-// var ctx = document.getElementById('myChart').getContext('2d');
-// var myNewChart = new Chart(ctx).Bar(setUpBarChart);
+function eventListenerButton() {
+  button = document.getElementById('results');
+  button.addEventListener('click', generateGraphOfData);
+}
 
 function BarChartData () {
   this.labels = [];
@@ -121,29 +124,67 @@ function BarDataSet(labelName, color) {
 }
 
 BarDataSet.prototype.getFields = function (inputArray, field) {
-  for (var i = 0; i < inputArray.length ; i++)
+  for (var i = 0; i < inputArray.length ; i++) {
     this.data.push(inputArray[i][field]);
+  }
+};
+
+BarDataSet.prototype.getPercentClicked = function (inputArray, field1, field2) {
+  for (var i = 0; i < inputArray.length ; i++) {
+    var percentClicked = parseInt(inputArray[i][field1]) / parseInt(inputArray[i][field2]);
+    if (isNaN(percentClicked)) {
+      this.data.push(0);
+    } else {
+      this.data.push(percentClicked);
+    }
+  }
 };
 
 BarChartData.prototype.getLabels = function (inputArray, field) {
-  for (var i = 0; i < inputArray.length ; i++)
+  for (var i = 0; i < inputArray.length ; i++) {
     this.labels.push(inputArray[i][field]);
+  }
 };
 
 BarChartData.prototype.pushData = function(chartData) {
   this.datasets.push(chartData);
 };
 
-var clicksforgraph = new BarDataSet('clicks', 'rgba(220,220,220,1)');
-clicksforgraph.getFields(surveyImagesArray, 'timesClicked');
+function generateGraphOfData(){
+  clearBox('myChart');
+  if (document.getElementsByName('canvas')) {
+    var elChartArea = document.getElementById('chartArea');
+    var elCanvas = document.createElement('canvas');
+    elCanvas.setAttribute('height', '500');
+    elCanvas.setAttribute('width', '700');
+    elCanvas.setAttribute('id', 'myChart');
+  }
+  var clicksforgraph = new BarDataSet('clicks', 'rgba(220,220,220,1)');
+  clicksforgraph.getFields(surveyImagesArray, 'timesClicked');
+  console.log('clicksforgraph: ', clicksforgraph);
+  var renderedforgraph = new BarDataSet('rendered', 'rgba(151,187,205,1)');
+  renderedforgraph.getFields(surveyImagesArray, 'timesRendered');
+  console.log('renederedforgraph: ', renderedforgraph);
+  var percentClicks = new BarDataSet('percent clicked', 'rgb(0,0,0)');
+  percentClicks.getPercentClicked(surveyImagesArray, 'timesClicked', 'timesRendered');
+  console.log('percentClicks: ', percentClicks);
+  var setUpBarChart = new BarChartData();
+  setUpBarChart.pushData(clicksforgraph);
+  setUpBarChart.pushData(renderedforgraph);
+  setUpBarChart.pushData(percentClicks);
+  setUpBarChart.getLabels(surveyImagesArray, 'name');
+  console.log('setUpBarChart, ', setUpBarChart);
+  var ctx = document.getElementById('myChart').getContext('2d');
+  var myNewChart = new Chart(ctx).Bar(setUpBarChart);
+}
 
-var renderedforgraph = new BarDataSet('rendered', 'rgba(151,187,205,1)');
-renderedforgraph.getFields(surveyImagesArray, 'timesRendered');
-
-var setUpBarChart = new BarChartData();
-setUpBarChart.pushData(clicksforgraph);
-setUpBarChart.pushData(renderedforgraph);
-setUpBarChart.getLabels(surveyImagesArray, 'name');
+function createButtonResults () {
+  var button = document.createElement('button');
+  button.setAttribute('id', 'results');
+  button.innerHTML = 'Get results!';
+  //button.onclick = generateGraphOfData();
+  document.getElementById('marketResearch').appendChild(button);
+}
 
 //call render Images function
 renderImages();
