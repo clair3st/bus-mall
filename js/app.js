@@ -8,8 +8,13 @@ function SurveyImages(name, filePath) {
   this.filePath = filePath;
   this.timesRendered = 0;
   this.timesClicked = 0;
+  this.percentClicked = parseInt(this.timesRendered) / parseInt(this.timesClicked);
   surveyImagesArray.push(this);
 }
+
+// SurveyImages.prototype.percentClicked = function(){
+//   this.percentClicked = this.timesRendered / this.allPieData;
+// };
 
 //function generates an array of random numbers within min and max values
 function randomNoArray (min, max) {
@@ -97,6 +102,48 @@ function eventListener() {
     surveyDisplay[i].addEventListener('click', handleImageClick);
   }
 }
+
+// var ctx = document.getElementById('myChart').getContext('2d');
+// var myNewChart = new Chart(ctx).Bar(setUpBarChart);
+
+function BarChartData () {
+  this.labels = [];
+  this.datasets = [];
+}
+
+function BarDataSet(labelName, color) {
+  this.label = labelName;
+  this.fillColor = color;
+  this.strokeColor = color;
+  this.highlightFill = color;
+  this.highlightStroke = color;
+  this.data = [];
+}
+
+BarDataSet.prototype.getFields = function (inputArray, field) {
+  for (var i = 0; i < inputArray.length ; i++)
+    this.data.push(inputArray[i][field]);
+};
+
+BarChartData.prototype.getLabels = function (inputArray, field) {
+  for (var i = 0; i < inputArray.length ; i++)
+    this.labels.push(inputArray[i][field]);
+};
+
+BarChartData.prototype.pushData = function(chartData) {
+  this.datasets.push(chartData);
+};
+
+var clicksforgraph = new BarDataSet('clicks', 'rgba(220,220,220,1)');
+clicksforgraph.getFields(surveyImagesArray, 'timesClicked');
+
+var renderedforgraph = new BarDataSet('rendered', 'rgba(151,187,205,1)');
+renderedforgraph.getFields(surveyImagesArray, 'timesRendered');
+
+var setUpBarChart = new BarChartData();
+setUpBarChart.pushData(clicksforgraph);
+setUpBarChart.pushData(renderedforgraph);
+setUpBarChart.getLabels(surveyImagesArray, 'name');
 
 //call render Images function
 renderImages();
