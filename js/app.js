@@ -17,16 +17,16 @@ function SurveyImages(name, filePath) {
 
 //function generates an array of random numbers within min and max values
 function randomNoArray (min, max) {
-  var displayedArray = [];
+  var getThreeIndex = [];
   for (var i = 0; i < 3; i++) {
-    displayedArray.push(Math.floor(Math.random() * (max - min)) + min);
+    getThreeIndex.push(Math.floor(Math.random() * (max - min)) + min);
   }
-  while (displayedArray[0] === displayedArray[1] || displayedArray[1] === displayedArray[2] || displayedArray[0] === displayedArray[2]) {
-    displayedArray.splice(1, 2);
-    displayedArray.push(Math.floor(Math.random() * (max - min)) + min);
-    displayedArray.push(Math.floor(Math.random() * (max - min)) + min);
+  while (getThreeIndex[0] === getThreeIndex[1] || getThreeIndex[1] === getThreeIndex[2] || getThreeIndex[0] === getThreeIndex[2]) {
+    getThreeIndex.splice(1, 2);
+    getThreeIndex.push(Math.floor(Math.random() * (max - min)) + min);
+    getThreeIndex.push(Math.floor(Math.random() * (max - min)) + min);
   }
-  return displayedArray;
+  return getThreeIndex;
 }
 
 //function to clear elements from page
@@ -41,17 +41,18 @@ function addClicks(id) {
       surveyImagesArray[i].timesClicked ++;
       totalClicks ++;
       console.log('total clicks: ' + totalClicks);
+      break;
     }
   }
 }
 
 //function to render three different random images to a page
 function renderImages() {
-  var key = randomNoArray(0, surveyImagesArray.length);
+  var getThreeIndex = randomNoArray(0, surveyImagesArray.length);
   var randomObject, elBody, elImg;
   elBody = document.getElementById('marketResearch');
   for (var i = 0; i < 3; i++) {
-    randomObject = surveyImagesArray[key[i]];
+    randomObject = surveyImagesArray[getThreeIndex[i]];
     elImg = document.createElement('img');
     elImg.setAttribute('class', 'survey-display');
     elImg.setAttribute('src', randomObject.filePath);
@@ -59,7 +60,7 @@ function renderImages() {
     elBody.appendChild(elImg);
     randomObject.timesRendered ++;
   }
-  eventListener();
+  eventListenerClickImage();
 }
 
 //create an instance of Survey Images for each product
@@ -92,23 +93,35 @@ function handleImageClick(event) {
   clearBox('marketResearch');
   if (totalClicks < 25) {
     renderImages();
-  } else if (totalClicks === 25) {
-    //createButtonResults();
-    //eventListenerButton();
-    generateGraphOfData();
+  } else {
+    createButton('results', 'Click for results!');
+    eventListenerResultsButton();
+    createButton('more-tries', '10 more');
+    eventListenerButtonTenMore();
   }
 }
 
-function eventListener() {
+function eventListenerClickImage() {
   var surveyDisplay = document.getElementsByClassName('survey-display');
   for (var i = 0; i < surveyDisplay.length; i++){
     surveyDisplay[i].addEventListener('click', handleImageClick);
   }
 }
 
-function eventListenerButton() {
-  button = document.getElementById('results');
+function eventListenerResultsButton() {
+  var button = document.getElementById('results');
   button.addEventListener('click', generateGraphOfData);
+}
+
+function eventListenerButtonTenMore() {
+  var button = document.getElementById('more-tries');
+  button.addEventListener('click', addTenMoreClicks);
+}
+
+function addTenMoreClicks() {
+  totalClicks = 15;
+  clearBox('marketResearch');
+  renderImages();
 }
 
 function BarChartData () {
@@ -125,13 +138,13 @@ function BarDataSet(labelName, color) {
   this.data = [];
 }
 
-BarDataSet.prototype.getFields = function (inputArray, field) {
+BarDataSet.prototype.setFields = function (inputArray, field) {
   for (var i = 0; i < inputArray.length ; i++) {
     this.data.push(inputArray[i][field]);
   }
 };
 
-BarDataSet.prototype.getPercentClicked = function (inputArray, field1, field2) {
+BarDataSet.prototype.setPercentClicked = function (inputArray, field1, field2) {
   var percentClicked;
   for (var i = 0; i < inputArray.length ; i++) {
     percentClicked = parseInt(inputArray[i][field1]) / parseInt(inputArray[i][field2]);
@@ -143,7 +156,7 @@ BarDataSet.prototype.getPercentClicked = function (inputArray, field1, field2) {
   }
 };
 
-BarChartData.prototype.getLabels = function (inputArray, field) {
+BarChartData.prototype.setLabels = function (inputArray, field) {
   for (var i = 0; i < inputArray.length ; i++) {
     this.labels.push(inputArray[i][field]);
   }
@@ -154,44 +167,47 @@ BarChartData.prototype.pushData = function(chartData) {
 };
 
 function generateGraphOfData(){
-  // clearBox('chartArea');
-  // if (document.getElementById('myChart') == null) {
-  //   var elChartArea = document.getElementById('chartArea');
-  //   var elCanvas = document.createElement('canvas');
-  //   elCanvas.setAttribute('height', '500');
-  //   elCanvas.setAttribute('width', '700');
-  //   elCanvas.setAttribute('id', 'myChart');
-  // }
+  clearBox('marketResearch');
+  clearBox('chartArea');
+  var elChartArea = document.getElementById('chartArea');
+  var elCanvas = document.createElement('canvas');
+  elCanvas.setAttribute('height', '500');
+  elCanvas.setAttribute('width', '700');
+  elCanvas.setAttribute('id', 'myChart');
+  elChartArea.appendChild(elCanvas);
+
   var clicksforgraph = new BarDataSet('clicks', 'rgba(220,220,220,1)');
-  clicksforgraph.getFields(surveyImagesArray, 'timesClicked');
+  clicksforgraph.setFields(surveyImagesArray, 'timesClicked');
   console.log('clicksforgraph: ', clicksforgraph);
 
   var renderedforgraph = new BarDataSet('rendered', 'rgba(151,187,205,1)');
-  renderedforgraph.getFields(surveyImagesArray, 'timesRendered');
+  renderedforgraph.setFields(surveyImagesArray, 'timesRendered');
   console.log('renederedforgraph: ', renderedforgraph);
 
   var percentClicks = new BarDataSet('percent clicked', 'rgb(0,0,0)');
-  percentClicks.getPercentClicked(surveyImagesArray, 'timesClicked', 'timesRendered');
+  percentClicks.setPercentClicked(surveyImagesArray, 'timesClicked', 'timesRendered');
   console.log('percentClicks: ', percentClicks);
 
   var setUpBarChart = new BarChartData();
   setUpBarChart.pushData(clicksforgraph);
   setUpBarChart.pushData(renderedforgraph);
   setUpBarChart.pushData(percentClicks);
-  setUpBarChart.getLabels(surveyImagesArray, 'name');
+  setUpBarChart.setLabels(surveyImagesArray, 'name');
   console.log('setUpBarChart, ', setUpBarChart);
   var ctx = document.getElementById('myChart').getContext('2d');
   var myNewChart = new Chart(ctx).Bar(setUpBarChart);
 }
 
-function createButtonResults () {
+function createButton (idName, buttonScript) {
   var button = document.createElement('button');
-  button.setAttribute('id', 'results');
-  button.innerHTML = 'Get results!';
-  //button.onclick = generateGraphOfData();
+  button.setAttribute('id', idName);
+  button.innerHTML = buttonScript;
   document.getElementById('marketResearch').appendChild(button);
 }
 
+// function createButtonMoreClicks
+
 //call render Images function
 renderImages();
+
 //call event listner
