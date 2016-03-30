@@ -17,8 +17,8 @@ function SurveyImages(name, filePath) {
 
 //function generates an array of random numbers within min and max values
 function randomNoArray (min, max) {
+  var displayedArray = [];
   for (var i = 0; i < 3; i++) {
-    var displayedArray = [];
     displayedArray.push(Math.floor(Math.random() * (max - min)) + min);
   }
   while (displayedArray[0] === displayedArray[1] || displayedArray[1] === displayedArray[2] || displayedArray[0] === displayedArray[2]) {
@@ -47,10 +47,11 @@ function addClicks(id) {
 
 //function to render three different random images to a page
 function renderImages() {
-  key = randomNoArray(0, surveyImagesArray.length);
+  var key = randomNoArray(0, surveyImagesArray.length);
+  var randomObject, elBody, elImg;
+  elBody = document.getElementById('marketResearch');
   for (var i = 0; i < 3; i++) {
     randomObject = surveyImagesArray[key[i]];
-    elBody = document.getElementById('marketResearch');
     elImg = document.createElement('img');
     elImg.setAttribute('class', 'survey-display');
     elImg.setAttribute('src', randomObject.filePath);
@@ -58,6 +59,7 @@ function renderImages() {
     elBody.appendChild(elImg);
     randomObject.timesRendered ++;
   }
+  eventListener();
 }
 
 //create an instance of Survey Images for each product
@@ -84,16 +86,16 @@ var wineglassImg = new SurveyImages('wine-glass', 'img/wine-glass.jpg');
 
 //event Handler for clicking an image
 function handleImageClick(event) {
-  imgEl = event.target;
-  idEl = imgEl.id;
+  var imgEl = event.target;
+  var idEl = imgEl.id;
   addClicks(idEl);
   clearBox('marketResearch');
   if (totalClicks < 25) {
     renderImages();
-    eventListener();
   } else if (totalClicks === 25) {
-    createButtonResults();
-    eventListenerButton();
+    //createButtonResults();
+    //eventListenerButton();
+    generateGraphOfData();
   }
 }
 
@@ -130,8 +132,9 @@ BarDataSet.prototype.getFields = function (inputArray, field) {
 };
 
 BarDataSet.prototype.getPercentClicked = function (inputArray, field1, field2) {
+  var percentClicked;
   for (var i = 0; i < inputArray.length ; i++) {
-    var percentClicked = parseInt(inputArray[i][field1]) / parseInt(inputArray[i][field2]);
+    percentClicked = parseInt(inputArray[i][field1]) / parseInt(inputArray[i][field2]);
     if (isNaN(percentClicked)) {
       this.data.push(0);
     } else {
@@ -151,23 +154,26 @@ BarChartData.prototype.pushData = function(chartData) {
 };
 
 function generateGraphOfData(){
-  clearBox('myChart');
-  if (document.getElementsByName('canvas')) {
-    var elChartArea = document.getElementById('chartArea');
-    var elCanvas = document.createElement('canvas');
-    elCanvas.setAttribute('height', '500');
-    elCanvas.setAttribute('width', '700');
-    elCanvas.setAttribute('id', 'myChart');
-  }
+  // clearBox('chartArea');
+  // if (document.getElementById('myChart') == null) {
+  //   var elChartArea = document.getElementById('chartArea');
+  //   var elCanvas = document.createElement('canvas');
+  //   elCanvas.setAttribute('height', '500');
+  //   elCanvas.setAttribute('width', '700');
+  //   elCanvas.setAttribute('id', 'myChart');
+  // }
   var clicksforgraph = new BarDataSet('clicks', 'rgba(220,220,220,1)');
   clicksforgraph.getFields(surveyImagesArray, 'timesClicked');
   console.log('clicksforgraph: ', clicksforgraph);
+
   var renderedforgraph = new BarDataSet('rendered', 'rgba(151,187,205,1)');
   renderedforgraph.getFields(surveyImagesArray, 'timesRendered');
   console.log('renederedforgraph: ', renderedforgraph);
+
   var percentClicks = new BarDataSet('percent clicked', 'rgb(0,0,0)');
   percentClicks.getPercentClicked(surveyImagesArray, 'timesClicked', 'timesRendered');
   console.log('percentClicks: ', percentClicks);
+
   var setUpBarChart = new BarChartData();
   setUpBarChart.pushData(clicksforgraph);
   setUpBarChart.pushData(renderedforgraph);
@@ -189,4 +195,3 @@ function createButtonResults () {
 //call render Images function
 renderImages();
 //call event listner
-eventListener();
