@@ -1,5 +1,6 @@
 //Global variable
-surveyImagesArray = [];
+var surveyImagesArray = [];
+var totalClicks = 0;
 
 //Object constructor
 function SurveyImages(name, filePath) {
@@ -34,16 +35,18 @@ function addClicks(id) {
   for (var i = 0; i < surveyImagesArray.length; i++) {
     if (surveyImagesArray[i].name == id) {
       surveyImagesArray[i].timesClicked ++;
+      totalClicks ++;
+      console.log('total clicks: ' + totalClicks);
     }
   }
 }
+
 
 //function to render three different random images to a page
 function renderImages() {
   key = randomNoArray(0, surveyImagesArray.length);
   for (var i = 0; i < 3; i++) {
     randomObject = surveyImagesArray[key[i]];
-    console.log('randomObject', randomObject);
     elBody = document.getElementById('marketResearch');
     elImg = document.createElement('img');
     elImg.setAttribute('class', 'survey-display');
@@ -80,11 +83,12 @@ var wineglassImg = new SurveyImages('wine-glass', 'img/wine-glass.jpg');
 function handleImageClick(event) {
   imgEl = event.target;
   idEl = imgEl.id;
-  console.log('id ', idEl);
   addClicks(idEl);
   clearBox('marketResearch');
-  renderImages();
-  eventListener();
+  if (totalClicks < 25) {
+    renderImages();
+    eventListener();
+  }
 }
 
 function eventListener() {
