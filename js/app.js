@@ -11,10 +11,6 @@ function SurveyImages(name, filePath) {
   surveyImagesArray.push(this);
 }
 
-// SurveyImages.prototype.percentClicked = function(){
-//   this.percentClicked = this.timesRendered / this.allPieData;
-// };
-
 //function generates an array of random numbers within min and max values
 function randomNoArray (min, max) {
   var getThreeIndex = [];
@@ -54,7 +50,7 @@ function renderImages() {
   for (var i = 0; i < 3; i++) {
     randomObject = surveyImagesArray[getThreeIndex[i]];
     elImg = document.createElement('img');
-    elImg.setAttribute('class', 'survey-display');
+    elImg.setAttribute('class', 'survey-display animated pulse');
     elImg.setAttribute('src', randomObject.filePath);
     elImg.setAttribute('id', randomObject.name);
     elBody.appendChild(elImg);
@@ -95,10 +91,10 @@ function handleImageClick(event) {
   if (totalClicks < 5) {
     renderImages();
   } else {
-    createButton('results', 'Click for results!');
-    eventListenerResultsButton();
     createButton('more-tries', '10 more');
     eventListenerButtonTenMore();
+    createButton('results', 'Click for results!');
+    eventListenerResultsButton();
   }
 }
 
@@ -183,11 +179,11 @@ function generateGraphOfData(){
   elCanvas.setAttribute('id', 'my-chart');
   elChartArea.appendChild(elCanvas);
 
-  var clicksforgraph = new BarDataSet('clicks', 'rgba(220,220,220,1)');
+  var clicksforgraph = new BarDataSet('clicks', 'rgba(207,70,71,1)');
   clicksforgraph.setFields(surveyImagesArray, 'timesClicked');
   console.log('clicksforgraph: ', clicksforgraph);
 
-  var renderedforgraph = new BarDataSet('times displayed', 'rgba(151,187,205,1)');
+  var renderedforgraph = new BarDataSet('times displayed', 'rgba(0, 135, 204, 1)');
   renderedforgraph.setFields(surveyImagesArray, 'timesRendered');
   console.log('renederedforgraph: ', renderedforgraph);
 
@@ -234,4 +230,3 @@ function clearLocalStorage(){
 //call render Images function
 renderImages();
 fetchResultsFromStorage();
-//call event listner
