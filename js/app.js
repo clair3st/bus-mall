@@ -225,6 +225,9 @@ function clearLocalStorage(){
   surveyImagesArray = [];
 }
 
+var clearLsButton = document.getElementById('clear-ls');
+clearLsButton.addEventListener('click', clearLocalStorage);
+
 // function createButtonMoreClicks
 
 //call render Images function
