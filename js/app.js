@@ -178,22 +178,20 @@ function generateGraphOfData(){
   chartHeading.textContent = 'Survey Results';
   elChartArea.appendChild(chartHeading);
   var elCanvas = document.createElement('canvas');
-  elCanvas.setAttribute('height', '500');
+  elCanvas.setAttribute('height', '450');
   elCanvas.setAttribute('width', '700');
   elCanvas.setAttribute('id', 'my-chart');
   elChartArea.appendChild(elCanvas);
-
-
 
   var clicksforgraph = new BarDataSet('clicks', 'rgba(220,220,220,1)');
   clicksforgraph.setFields(surveyImagesArray, 'timesClicked');
   console.log('clicksforgraph: ', clicksforgraph);
 
-  var renderedforgraph = new BarDataSet('rendered', 'rgba(151,187,205,1)');
+  var renderedforgraph = new BarDataSet('times displayed', 'rgba(151,187,205,1)');
   renderedforgraph.setFields(surveyImagesArray, 'timesRendered');
   console.log('renederedforgraph: ', renderedforgraph);
 
-  var percentClicks = new BarDataSet('percent clicked', 'rgb(0,0,0)');
+  var percentClicks = new BarDataSet('ratio clicked to displayed', 'rgb(0,0,0)');
   percentClicks.setPercentClicked(surveyImagesArray, 'timesClicked', 'timesRendered');
   console.log('percentClicks: ', percentClicks);
 
