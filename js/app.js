@@ -88,7 +88,7 @@ function handleImageClick(event) {
   addClicks(idEl);
   saveResultsToStorage();
   clearBox('market-research');
-  if (totalClicks < 5) {
+  if (totalClicks < 25) {
     renderImages();
   } else {
     createButton('more-tries', '10 more');
